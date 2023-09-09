@@ -3,7 +3,7 @@ import { NAMESPACE_CONTRACT } from "../constants";
 import { nameSpaceAbi } from "../abi/abi";
 import { BaseWeb3Contract } from "./BaseWeb3Contract";
 
-export class Cns extends BaseWeb3Contract{
+export class CNS extends BaseWeb3Contract{
 
     constructor(provider: ethers.Provider){
         super(provider, NAMESPACE_CONTRACT, nameSpaceAbi)

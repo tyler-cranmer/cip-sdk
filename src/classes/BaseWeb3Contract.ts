@@ -1,7 +1,5 @@
 import { ethers } from "ethers";
 
-
-
 export abstract class BaseWeb3Contract {
     protected provider: ethers.Provider;
     protected contract: ethers.Contract;
