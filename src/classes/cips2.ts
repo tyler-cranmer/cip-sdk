@@ -55,7 +55,7 @@ export class CIP {
       const result: BigInt = await this.registryContract.getCID(address);
       return result;
     } catch (error) {
-      throw new Error(`Failed to get the CID fpr ${address}`);
+      throw new Error(`Failed to get the CID fpr ${address}.\nError: ${error}`);
     }
   }
 
@@ -190,6 +190,10 @@ export class CIP {
       throw new Error(`Failed to get bio from bioCID: ${bioCID}.\n Error: ${error}`)
     }
   }
+
+
+
+  
 
   // private async getByAddress(address: `0x${string}`, getter: (string: any) => Promise<string>): Promise<string | null> {
   //   const cid = await this.getCID(address);
