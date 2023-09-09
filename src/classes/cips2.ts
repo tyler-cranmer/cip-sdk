@@ -1,8 +1,10 @@
+
+
 import { ethers } from "ethers";
 import { cidNftAbi } from "../abi/abi";
 import { CID_NFT_CONTRACT } from "../constants";
 // import {NameSpace }from '../src/types';
-import { BaseWeb3Contract } from "../classes/BaseWeb3Contract";
+import { BaseWeb3Contract } from "./BaseWeb3Contract";
 import { AddressRegistry } from "../AddressRegistry";
 
 export class Cip2 extends BaseWeb3Contract{
@@ -27,6 +29,8 @@ export class Cip2 extends BaseWeb3Contract{
     return getter(cid);
   }
 
+
+  
   public async getPFP(cid: bigint): Promise<string> {
     const result = await this.getPrimaryData(cid, 'pfp');
     return result;
