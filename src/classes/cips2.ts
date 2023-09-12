@@ -5,7 +5,8 @@ import {
   addressRegistryAbi,
   bioAbi,
   nameSpaceAbi,
-  erc721ABI,
+  // erc721ABI,
+  erc721ABI2
 } from '../abi/abi';
 import {
   CID_NFT_CONTRACT,
@@ -55,7 +56,7 @@ export class CIP {
       const result: BigInt = await this.registryContract.getCID(address);
       return result;
     } catch (error) {
-      throw new Error(`Failed to get the CID fpr ${address}.\nError: ${error}`);
+      throw new Error(`Failed to get the CID for ${address}.\nError: ${error}`);
     }
   }
 
@@ -64,7 +65,7 @@ export class CIP {
     subprotocolName: string
   ): Promise<BigInt> {
     try {
-      const result: BigInt = await this.registryContract.getPrimaryData(
+      const result: BigInt = await this.identityContract.getPrimaryData(
         cid,
         subprotocolName
       );
@@ -98,10 +99,10 @@ export class CIP {
 
   public async getBioCID(cid: BigInt): Promise<BigInt> {
     try {
-      const bioCID: BigInt = await this.getPrimaryData(cid, 'bio')
-      return bioCID
+      const bioCID: BigInt = await this.getPrimaryData(cid, 'bio');
+      return bioCID;
     } catch (error) {
-      throw new Error(`Failed to get bioCID from ${cid}.\nError: ${error}`)
+      throw new Error(`Failed to get bioCID from ${cid}.\nError: ${error}`);
     }
   }
 
@@ -127,11 +128,11 @@ export class CIP {
       );
     }
   }
-/**
- * @description This method is used to get the ProfilePictureData to be used in the getPfpImage method.
- * @param pfpCID 
- * @returns 
- */
+  /**
+   * @description This method is used to get the ProfilePictureData to be used in the getPfpImage method.
+   * @param pfpCID
+   * @returns
+   */
   public async getPfpData(pfpCID: BigInt): Promise<ProfilePictureData> {
     try {
       const profileData: ProfilePictureData = await this.pfpContract.pfp(
@@ -153,47 +154,45 @@ export class CIP {
       let pfp: ProfilePictureInfo = {
         src: '',
         alt: '',
-        id: -1,
       };
       const nftContract = new ethers.Contract(
         nftContractAddress,
-        erc721ABI,
+        erc721ABI2,
         this.provider
       );
+
       const nftMeta: string = await nftContract.tokenURI(nftID);
+   
       if (nftMeta) {
         const transformedURI = transformURI(nftMeta);
         try {
-          const image: any = fetchImage(transformedURI);
+          const image: any = await fetchImage(transformedURI);
           pfp.src = image.image;
           pfp.alt = image.name;
-          pfp.id = image.id;
         } catch (error1) {
           throw new Error(
-            `Failed to fetch the NFT data from ID:${nftID} and contact address: ${nftContractAddress}.\nError: ${error1} `
+            `Failed to fetch the NFT data from ID:${nftID} and contact address: ${nftContractAddress}.\nError1: ${error1} `
           );
         }
       }
       return pfp;
     } catch (error) {
       throw new Error(
-        `Failed to get the NFT ID:${nftID} meta data from contact address: ${nftContractAddress}.\nError: ${error} `
+        `Failed to get the NFT ID:${nftID} meta data from contact address: ${nftContractAddress}.\nError2: ${error} `
       );
     }
   }
 
   public async getBio(bioCID: BigInt): Promise<string> {
     try {
-      const bio: string = await this.bioContract.bio(bioCID)
-      return bio
-    } catch(error){
-      throw new Error(`Failed to get bio from bioCID: ${bioCID}.\n Error: ${error}`)
+      const bio: string = await this.bioContract.bio(bioCID);
+      return bio;
+    } catch (error) {
+      throw new Error(
+        `Failed to get bio from bioCID: ${bioCID}.\n Error: ${error}`
+      );
     }
   }
-
-
-
-  
 
   // private async getByAddress(address: `0x${string}`, getter: (string: any) => Promise<string>): Promise<string | null> {
   //   const cid = await this.getCID(address);

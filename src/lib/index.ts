@@ -56,7 +56,7 @@ export function fontTransformer(char: string): string | null {
 
 export const transformURI = (uri: string): string => {
   if (uri.includes('ipfs://')) {
-    return uri.replace('ipfs://', 'https://ipfs.io/ipfs/');
+    return uri.replace('ipfs://', 'https://dweb.link/ipfs/');
   }
   if (uri.includes('ar://')) {
     return uri.replace('ar://', 'https://arweave.net/');

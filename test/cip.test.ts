@@ -1,41 +1,115 @@
-import { Cip } from '../src/cip';
+import { CIP } from '../src/classes/cips2';
 import { ethers } from 'ethers';
-import { CID_NFT_CONTRACT, ADDRESS_REGISTRY_CONTRACT, ANSYBL_URL } from '../src/constants';
+import { ANSYBL_URL} from '../src/constants';
 
 
 describe('Cip', () => {
     let mockProvider: ethers.Provider;
-    let cipInstance: Cip;
+    let cipInstance: CIP;
     let testAddress: `0x${string}`;
-    let testAddressCid: bigint
-    // Create an instance of the Cip class before each test
-    beforeEach(() => {
+    let testAddressCid: BigInt;
+    let testPfpCID: BigInt;
+    let testBioCID: BigInt;
+    let testNamespaceCID: BigInt;
+
+    beforeEach(async () => {
         mockProvider = new ethers.JsonRpcProvider(ANSYBL_URL)
-        cipInstance = new Cip(mockProvider)
-        testAddress = '0x035bC96201666333294C5A04395Bb3618a2b6A11'
+        cipInstance = new CIP(mockProvider)
+        testAddress = '0x035bc96201666333294c5a04395bb3618a2b6a11'
         testAddressCid = 21n
+        testPfpCID = 35n;
+        testBioCID = 17n;
+        testNamespaceCID = 122n;
     });
 
-    it('should initialize with default addresses', () => {
-        expect(cipInstance.addresses.cip).toBe(CID_NFT_CONTRACT);
-        expect(cipInstance.addresses.addressRegistry).toBe(ADDRESS_REGISTRY_CONTRACT);
-    });
-
-    // it('should override default addresses', () => {
-    //     const address_override = {
-    //         cip: '0xCustomCipAddress',
-    //         addressRegistry: '0xCustomRegistryAddress'
-    //     };
-    //     const cipInstance = new Cip(mockProvider, address_override);
-
-    //     expect(cipInstance.addresses.cip).toBe(address_override.cip);
-    //     expect(cipInstance.addresses.addressRegistry).toBe(address_override.addressRegistry);
-    // });
 
     it('should get the CID for address', async () => {
-        const cid = await cipInstance.getCid(testAddress)
-        expect(cid).toEqual(testAddressCid)
+        const CID = await cipInstance.getCID(testAddress)
+        expect(CID).toEqual(testAddressCid)
     }, 10000)
+
+
+    it('should return primary data namespace',async () => {
+  
+        const data = await cipInstance.getPrimaryData(testAddressCid, 'namespace')
+        expect(data).toEqual(122n)
+    }, 10000 )
+
+    it('should get namespace ID', async () => {
+
+        const data = await cipInstance.getNamespaceCID(testAddressCid)
+        expect(data).toEqual(122n);
+    }, 10000)
+
+    it('should return pfpCID', async ()=> {
+    
+        const data = await cipInstance.getPfpCID(testAddressCid);
+        expect(data).toEqual(35n)
+    }, 10000)
+
+    it('should get BioCID', async () => {
+     
+        const data = await cipInstance.getBioCID(testAddressCid);
+
+        expect(data).toEqual(17n);
+    }, 10000);
+
+
+    it('should get Namespace', async () => {
+        const name_to_be_returned = {
+            displayName: '0xt𝑒𝑒ɯ𝒽𝓎',
+            baseName: '0xteewhy.canto'
+        }
+
+        const namespace = await cipInstance.getNamespace(testNamespaceCID)
+
+        expect(namespace).toEqual(name_to_be_returned);
+    },  10000);
+
+
+    it('should get pfpData', async () => {
+        const pfp_data_to_be_returned = ['0x1d20740CcEd2CaF15389d4Ed625d25C8Ac4e0272', 17n ]
+        const pfpData = await cipInstance.getPfpData(testPfpCID);
+
+        expect(pfpData).toEqual(pfp_data_to_be_returned)
+
+    }, 10000);
+
+
+    it('should return pfp Image data', async () => {
+        const pfp_to_be_returned = {
+            src: 'ipfs://QmfVfRh6Um2eg1gVuAzSgEDYmgcYGVKR1EVM45ZWkUN6KX/17.png',
+            alt: 'CantoLanterns #17',
+        }
+
+        const nft_contract = '0x1d20740CcEd2CaF15389d4Ed625d25C8Ac4e0272'
+        const nftID = 17n  
+        const pfpData =  await cipInstance.getPfpImage(nft_contract, nftID);
+
+        expect(pfpData).toEqual(pfp_to_be_returned)
+
+    }, 10000 );
+
+    it('should get bio', async () => {
+        const bio = await cipInstance.getBio(testBioCID);
+        expect(bio).toEqual('builder. coder. boarder.')
+    }, 10000)
+
+
+
+
+
+
+
+
+
+    // it('should return return erron when an invalid address is given', async () => {
+    //     const invalid_id = '0x035bC96201666333294C5A04395Bb3618a2b6A45';
+
+    //     await expect(cipInstance.getCID(invalid_id)).rejects.toEqual({
+    //         error: 'User with 3 not found.',
+    //       });
+    // }, 10000)
 
     // it('should fetch primary data', async () => {
     //     const mockData = 'sampleData';
