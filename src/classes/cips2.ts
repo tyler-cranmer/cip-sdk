@@ -128,6 +128,7 @@ export class CIP {
       );
     }
   }
+
   /**
    * @description This method is used to get the ProfilePictureData to be used in the getPfpImage method.
    * @param pfpCID
@@ -171,7 +172,7 @@ export class CIP {
           pfp.alt = image.name;
         } catch (error1) {
           throw new Error(
-            `Failed to fetch the NFT data from ID:${nftID} and contact address: ${nftContractAddress}.\nError1: ${error1} `
+            `Failed to fetch the NFT image data from ID:${nftID} and contact address: ${nftContractAddress}.\nError1: ${error1} `
           );
         }
       }
@@ -229,15 +230,6 @@ export class CIP {
   //   return await this.getByAddress(address, this.getNamespace);
   // }
 
-  // public async getUserNamespace(address: `0x${string}`): Promise<string> {
-  //   try {
-  //     const userCID = await this.getCid(address)
-  //     const namespaceCid = await this.getPrimaryData(userCID, "namespace")
-  //     // This is where I would call cns class
-  //     const namespace = await Cns.getNamespaceCharacters(namespaceCid)
-  //     return namespace
-  //   } catch(error){
-  //     throw new Error("Failed")
-  //   }
+
   // }
 }
