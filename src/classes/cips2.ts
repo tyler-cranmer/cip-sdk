@@ -5,7 +5,6 @@ import {
   addressRegistryAbi,
   bioAbi,
   nameSpaceAbi,
-  // erc721ABI,
   erc721ABI2
 } from '../abi/abi';
 import {
@@ -49,8 +48,17 @@ export class CIP {
       pfpWrapperAbi,
       this.provider
     );
+
+    this.getBio= this.getBio.bind(this);
+    this.getNamespace = this.getNamespace.bind(this)
   }
 
+  /**
+   * getCID is a method that calls the Canto Identity registration contract and returns the CID NFT ID that is registered to the provided address.
+   * The CID NFT ID can be used to get a users sub protocol NFT IDs.
+   * @param address Address to query.
+   * @returns The CID NFT ID of the provided address. 
+   */
   public async getCID(address: string): Promise<BigInt> {
     try {
       const result: BigInt = await this.registryContract.getCID(address);
@@ -60,6 +68,16 @@ export class CIP {
     }
   }
 
+
+/**
+ * getPrimaryData is a method that is used to get the users sub protocol NFT IDs of any subprotocol registered with the user's CID.
+ * This method is used to return any of the users registered sub protocol NFT IDs.
+ * The return value can be used to get a user's sub protocol data. i.e. namespace or bio information.
+ * 
+ * @param cid User's CID NFT ID - Can be obtained by using getCID method.
+ * @param subprotocolName the sub protocol name to query. Current list of sub protocols [namespace, profilepicture, bio]
+ * @returns subProtocol registered NFT ID.
+ */
   public async getPrimaryData(
     cid: BigInt,
     subprotocolName: string
@@ -77,6 +95,12 @@ export class CIP {
     }
   }
 
+  /**
+   * getNamespaceCID is a method that returns the user's registered namespace NFT ID.
+   * The return value is used by getNamespace() to retrieve the user's namespace data.
+   * @param cid User's CID NFT ID. see getCID() for more information.
+   * @returns User's Namespace NFT ID
+   */
   public async getNamespaceCID(cid: BigInt): Promise<BigInt> {
     try {
       const nCID: BigInt = await this.getPrimaryData(cid, 'namespace');
@@ -88,6 +112,13 @@ export class CIP {
     }
   }
 
+
+  /**
+   * getPfpCID is a method that is used to return a user's registered pfp NFT ID. 
+   * the return value is used by getPfpData() to get a user's profile picture information.
+   * @param cid User's CID NFT ID. see getCID() for more information.
+   * @returns User's pofile picture NFT ID
+   */
   public async getPfpCID(cid: BigInt): Promise<BigInt> {
     try {
       const pfpCID: BigInt = await this.getPrimaryData(cid, 'profilepicture');
@@ -97,6 +128,13 @@ export class CIP {
     }
   }
 
+
+  /**
+   * getBioCID is a method that is used to return a user's registered bio NFT ID.
+   * the return value is used by getBio() to get a user's bio information.
+   * @param cid User's CID NFT ID. see getCID() for more information.
+   * @returns User's bio NFT ID
+   */
   public async getBioCID(cid: BigInt): Promise<BigInt> {
     try {
       const bioCID: BigInt = await this.getPrimaryData(cid, 'bio');
@@ -106,6 +144,11 @@ export class CIP {
     }
   }
 
+/**
+ * getNamespace is a method that return a user's registered Namespace Information.
+ * @param namespaceCID User's registered namespace NFT ID. see getPrimaryData ()or getNamespaceCID()
+ * @returns Namespace Information in the form of display and base name. ex. displayName = 0xteewhy, baseName = 0xteewhy.canto
+ */
   public async getNamespace(namespaceCID: BigInt): Promise<NameSpace> {
     let displayName: string;
     let baseName: string;
@@ -131,8 +174,8 @@ export class CIP {
 
   /**
    * @description This method is used to get the ProfilePictureData to be used in the getPfpImage method.
-   * @param pfpCID
-   * @returns
+   * @param pfpCID - pfpCID comes from the getPfpCid()
+   * @returns ProfilePictureData = [string, BigInt]. Profile Picture data is the NFT contract and ID of the users profile picture. 
    */
   public async getPfpData(pfpCID: BigInt): Promise<ProfilePictureData> {
     try {
@@ -195,41 +238,43 @@ export class CIP {
     }
   }
 
-  // private async getByAddress(address: `0x${string}`, getter: (string: any) => Promise<string>): Promise<string | null> {
-  //   const cid = await this.getCID(address);
-  //   if (cid == 0n) {
-  //     return null;
-  //   }
-  //   return getter(cid);
-  // }
+  private async getByAddress(address: `0x${string}`, subprotocolName: string, getter: (string: any) => Promise<any>): Promise<BigInt | null> {
+    try{
+      const cid: BigInt = await this.getCID(address);
+      if (cid == 0n) {
+        throw new Error(`Address: ${address} does not have a registered CID.`)
+      } else {
+        const subProtocol = await this.getPrimaryData(cid, subprotocolName);
+        return getter(subProtocol);
+      }
+    } catch (error){
+      throw new Error(
+        `Failed getByAddress: ${error}`
+      );
+    }
+  }
 
-  // public async getPFP(cid: bigint): Promise<string> {
-  //   const result = await this.getPrimaryData(cid, 'pfp');
-  //   return result;
-  // }
+  public async getBioByAddress(address: `0x${string}`): Promise<any> {
+    return await this.getByAddress(address, 'bio', this.getBio);
+  }
 
-  // public async getPFPByAddress(address: `0x${string}`): Promise<string | null> {
-  //   return await this.getByAddress(address, this.getPFP);
-  // }
+  public async getNamespaceByAddress(address: `0x${string}`): Promise<any> {
+    return await this.getByAddress(address, 'namespace', this.getNamespace)
 
-  // public async getBio(cid: bigint): Promise<string> {
-  //   const result = await this.getPrimaryData(cid, 'bio');
-  //   return result;
-  // }
+  }
 
-  // public async getBioByAddress(address: `0x${string}`): Promise<string | null> {
-  //   return await this.getByAddress(address, this.getBio);
-  // }
+  public async getPfpByAddress(address: `0x${string}`): Promise <any> {
+try {
+  const cid = await this.getCID(address);
+  const pfpCID = await this.getPfpCID(cid);
+  const [contract, id] = await this.getPfpData(pfpCID);
+  const pfp = await this.getPfpImage(contract, id);
+  return pfp;
+} catch(error){
+  throw new Error(
+    `Failed to get pfp data from address: ${address}.\n Error: ${error}`
+  );
+}
+  }
 
-  // public async getNamespace(cid: bigint): Promise<string> {
-  //   const result = await this.getPrimaryData(cid, 'namespace');
-  //   return result;
-  // }
-
-  // public async getNamespaceByAddress(address: `0x${string}`): Promise<string | null> {
-  //   return await this.getByAddress(address, this.getNamespace);
-  // }
-
-
-  // }
 }

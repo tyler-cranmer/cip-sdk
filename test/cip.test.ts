@@ -75,7 +75,6 @@ describe('Cip', () => {
 
     }, 10000);
 
-
     it('should return pfp Image data', async () => {
         const pfp_to_be_returned = {
             src: 'ipfs://QmfVfRh6Um2eg1gVuAzSgEDYmgcYGVKR1EVM45ZWkUN6KX/17.png',
@@ -95,7 +94,42 @@ describe('Cip', () => {
         expect(bio).toEqual('builder. coder. boarder.')
     }, 10000)
 
+describe('CIP other functions', () => {
+    let mockProvider: ethers.Provider;
+    let cipInstance: CIP;
+    let testAddress: `0x${string}`;
 
+    beforeEach(async () => {
+        mockProvider = new ethers.JsonRpcProvider(ANSYBL_URL)
+        cipInstance = new CIP(mockProvider)
+        testAddress = '0x035bc96201666333294c5a04395bb3618a2b6a11'
+    });
+
+    it('should get the bio by address', async () => {
+        const bio = await cipInstance.getBioByAddress(testAddress)
+
+        expect(bio).toEqual('builder. coder. boarder.')
+    }, 10000)
+
+    it('should get namespace by address', async () => {
+        const name_to_be_returned = {
+            displayName: '0xt𝑒𝑒ɯ𝒽𝓎',
+            baseName: '0xteewhy.canto'
+        }
+        const ns = await cipInstance.getNamespaceByAddress(testAddress)
+        expect(ns).toEqual(name_to_be_returned)
+    }, 50000)
+
+    it.only('should get pfp info', async () => {
+        const pfp_to_be_returned = {
+            src: 'ipfs://QmfVfRh6Um2eg1gVuAzSgEDYmgcYGVKR1EVM45ZWkUN6KX/17.png',
+            alt: 'CantoLanterns #17',
+        }
+        const pfp = await cipInstance.getPfpByAddress(testAddress);
+        expect(pfp).toEqual(pfp_to_be_returned);
+    }, 50000)
+
+})
 
 
 
