@@ -132,6 +132,18 @@ describe('CIP other functions', () => {
 })
 
 
+describe("Register Sub Protocol", () => {
+    let mockProvider: ethers.Provider;
+    let cipInstance: CIP;
+    let testAddress: `0x${string}`;
+
+    beforeEach(async () => {
+        mockProvider = new ethers.JsonRpcProvider(ANSYBL_URL)
+        cipInstance = new CIP(mockProvider)
+        testAddress = '0x035bc96201666333294c5a04395bb3618a2b6a11'
+    });
+})
+
 
 
 

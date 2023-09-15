@@ -5,7 +5,8 @@ import {
   addressRegistryAbi,
   bioAbi,
   nameSpaceAbi,
-  erc721ABI2
+  erc721ABI2,
+  subprotocolRegistryAbi
 } from '../abi/abi';
 import {
   CID_NFT_CONTRACT,
@@ -13,20 +14,26 @@ import {
   BIO_CONTRACT,
   NAMESPACE_CONTRACT,
   PFP_WRAPPER_CONTRACT,
+  SUBPROTOCOL_REGISTRY_CONTRACT
 } from '../constants';
 import { NameSpace, ProfilePictureData, ProfilePictureInfo } from '../types';
 import { fetchImage, fontTransformer, transformURI } from '../lib';
 
 export class CIP {
   provider: ethers.Provider;
+  web3Provider?: ethers.BrowserProvider;
+  signer?: ethers.JsonRpcSigner;
   identityContract: ethers.Contract;
   registryContract: ethers.Contract;
   namespaceContract: ethers.Contract;
   bioContract: ethers.Contract;
   pfpContract: ethers.Contract;
+  subprotocolCrontract: ethers.Contract;
+  
 
-  constructor(provider: ethers.Provider) {
+  constructor(provider: ethers.Provider, web3Provider?: ethers.BrowserProvider ) {
     this.provider = provider;
+    this.web3Provider = web3Provider;
     this.identityContract = new ethers.Contract(
       CID_NFT_CONTRACT,
       cidNftAbi,
@@ -48,10 +55,58 @@ export class CIP {
       pfpWrapperAbi,
       this.provider
     );
+    if(web3Provider){
+      // @ts-ignore
+      this.signer = web3Provider.getSigner()
+      this.subprotocolCrontract = new ethers.Contract(SUBPROTOCOL_REGISTRY_CONTRACT, subprotocolRegistryAbi, this.signer);
+    } else {
+      this.subprotocolCrontract = new ethers.Contract(SUBPROTOCOL_REGISTRY_CONTRACT, subprotocolRegistryAbi, this.provider);
+    }
 
-    this.getBio= this.getBio.bind(this);
+
+    this.getBio = this.getBio.bind(this);
     this.getNamespace = this.getNamespace.bind(this)
   }
+
+
+  /**
+   * 
+   * @param ordered Ordering allows integers to be used as map keys, to one and only one value
+   * @param primary Primary maps to zero or one value
+   * @param active Subprotocols that have a list of a active NFTs
+   * @param address Name of the subprotocol, has to be unique
+   * @param name Address of the subprotocol NFT.
+   * @param fee Fee (in $NOTE) for minting a new token of the subprotocol. Set to 0 if there is no fee. 10% is subtracted from this fee as a CID fee
+   * @returns 
+   * 
+   * 
+   * 
+   * 
+   *     /// @notice Register a new subprotocol. There is a 100 $NOTE fee when registering
+    /// @dev The options ordered, primary, active are not mutually exclusive. In practice, only one will be set for most subprotocols,
+    /// but if a subprotocol for instance supports int keys (mapped to one value) and a list of active NFTs, ordered and active is true.
+    /// @param _ordered Ordering allows integers to be used as map keys, to one and only one value
+    /// @param _primary Primary maps to zero or one value
+    /// @param _active Subprotocols that have a list of a active NFTs
+    /// @param _name Name of the subprotocol, has to be unique
+    /// @param _nftAddress Address of the subprotocol NFT.
+    /// @param _fee Fee (in $NOTE) for minting a new token of the subprotocol. Set to 0 if there is no fee. 10% is subtracted from this fee as a CID fee
+   */
+  public async registerSubprotocol(ordered: boolean, primary: boolean, active: boolean, address: string, name: string, fee: BigInt) {
+    if (this.web3Provider) {
+      try {
+        const tx = await this.subprotocolCrontract.register(ordered, primary, active, address, name, fee);
+        const reciept = await tx.wait();
+        console.log("Transaction sent:", tx);
+        return reciept;
+      } catch (error) {
+        console.log("error:", error);
+      }
+    } else {
+      throw new Error(`Connect a Web3 provider like meta mask.`);
+    }
+  }
+ 
 
   /**
    * getCID is a method that calls the Canto Identity registration contract and returns the CID NFT ID that is registered to the provided address.
@@ -145,8 +200,8 @@ export class CIP {
   }
 
 /**
- * getNamespace is a method that return a user's registered Namespace Information.
- * @param namespaceCID User's registered namespace NFT ID. see getPrimaryData ()or getNamespaceCID()
+ * getNamespace is a method that return a user's registered Namespace displayName and baseName.
+ * @param namespaceCID User's registered namespace NFT ID. see getPrimaryData() or getNamespaceCID()
  * @returns Namespace Information in the form of display and base name. ex. displayName = 0xteewhy, baseName = 0xteewhy.canto
  */
   public async getNamespace(namespaceCID: BigInt): Promise<NameSpace> {
@@ -173,7 +228,7 @@ export class CIP {
   }
 
   /**
-   * @description This method is used to get the ProfilePictureData to be used in the getPfpImage method.
+   * This method is used to get the ProfilePictureData to be used in the getPfpImage method.
    * @param pfpCID - pfpCID comes from the getPfpCid()
    * @returns ProfilePictureData = [string, BigInt]. Profile Picture data is the NFT contract and ID of the users profile picture. 
    */
@@ -190,6 +245,12 @@ export class CIP {
     }
   }
 
+  /**
+   * getPfpImage
+   * @param nftContractAddress 
+   * @param nftID 
+   * @returns 
+   */
   public async getPfpImage(
     nftContractAddress: string,
     nftID: BigInt
@@ -227,6 +288,12 @@ export class CIP {
     }
   }
 
+
+  /**
+   * getBio
+   * @param bioCID 
+   * @returns 
+   */
   public async getBio(bioCID: BigInt): Promise<string> {
     try {
       const bio: string = await this.bioContract.bio(bioCID);
@@ -238,7 +305,14 @@ export class CIP {
     }
   }
 
-  private async getByAddress(address: `0x${string}`, subprotocolName: string, getter: (string: any) => Promise<any>): Promise<BigInt | null> {
+  /**
+   * getByAddress
+   * @param address 
+   * @param subprotocolName 
+   * @param getter 
+   * @returns 
+   */
+  private async getByAddress(address: string, subprotocolName: string, getter: (string: any) => Promise<any>): Promise<BigInt | null> {
     try{
       const cid: BigInt = await this.getCID(address);
       if (cid == 0n) {
@@ -254,16 +328,32 @@ export class CIP {
     }
   }
 
-  public async getBioByAddress(address: `0x${string}`): Promise<any> {
+
+  /**
+   * getBioByAddress
+   * @param address 
+   * @returns 
+   */
+  public async getBioByAddress(address: string): Promise<any> {
     return await this.getByAddress(address, 'bio', this.getBio);
   }
 
-  public async getNamespaceByAddress(address: `0x${string}`): Promise<any> {
+  /**
+   * getNamespaceByAddress
+   * @param address 
+   * @returns 
+   */
+  public async getNamespaceByAddress(address: string): Promise<any> {
     return await this.getByAddress(address, 'namespace', this.getNamespace)
 
   }
 
-  public async getPfpByAddress(address: `0x${string}`): Promise <any> {
+  /**
+   * getPfpByAddress
+   * @param address 
+   * @returns 
+   */
+  public async getPfpByAddress(address: string): Promise <any> {
 try {
   const cid = await this.getCID(address);
   const pfpCID = await this.getPfpCID(cid);

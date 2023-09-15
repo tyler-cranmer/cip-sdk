@@ -6,8 +6,14 @@ export const ADDRESS_REGISTRY_CONTRACT =
   '0x6f79a853958e4f072e4167c55e125f4b1032edf0';
 export const BIO_CONTRACT = '0x64bd6441cc942ce47bd22c05463d3e46ff71f7bf';
 export const TRAY_CONTRACT = '0x364acfceaf895aa369170f2b2237695e342e15aa';
+export const SUBPROTOCOL_REGISTRY_CONTRACT = '0x2824ead19fa76a03d06c2da673113b3ea2529139';
 export const RPC_URL = 'https://mainnode.plexnode.org:8545';
 export const ANSYBL_URL = 'https://archive-967fa5df-1-canto.ansybl.io/evm_rpc/';
+
+export const TEST_SUBPROTOCOL_REGISTRY_CONTRACT = '0xf5f2b89beed50a0801df49b24f7c2bf6fa52dc3b'
+export const TEST_CID_NFT_CONTRACT = '0x8ed389f3f0934396eefca08c685e2ec68c49d993'
+export const TEST_ADDRESS_REGISTRY_CONTRACT = '0x0b8ea1f4935a6d541eb50fc6f0ef12239fac6945'
+
 
 export const emojis = [
   "✨",
