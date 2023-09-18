@@ -1,4 +1,4 @@
-import { CIP } from '../src/classes/cips2';
+import { CIP } from '../src/index';
 import { ethers } from 'ethers';
 import { ANSYBL_URL} from '../src/constants';
 
@@ -132,50 +132,16 @@ describe('CIP other functions', () => {
 })
 
 
-describe("Register Sub Protocol", () => {
-    let mockProvider: ethers.Provider;
-    let cipInstance: CIP;
-    let testAddress: `0x${string}`;
+// describe("Register Sub Protocol", () => {
+//     let mockProvider: ethers.Provider;
+//     let cipInstance: CIP;
+//     let testAddress: `0x${string}`;
 
-    beforeEach(async () => {
-        mockProvider = new ethers.JsonRpcProvider(ANSYBL_URL)
-        cipInstance = new CIP(mockProvider)
-        testAddress = '0x035bc96201666333294c5a04395bb3618a2b6a11'
-    });
-})
+//     beforeEach(async () => {
+//         mockProvider = new ethers.JsonRpcProvider(ANSYBL_URL)
+//         cipInstance = new CIP(mockProvider)
+//         testAddress = '0x035bc96201666333294c5a04395bb3618a2b6a11'
+//     });
+// })
 
-
-
-
-
-
-    // it('should return return erron when an invalid address is given', async () => {
-    //     const invalid_id = '0x035bC96201666333294C5A04395Bb3618a2b6A45';
-
-    //     await expect(cipInstance.getCID(invalid_id)).rejects.toEqual({
-    //         error: 'User with 3 not found.',
-    //       });
-    // }, 10000)
-
-    // it('should fetch primary data', async () => {
-    //     const mockData = 'sampleData';
-
-    //     const result = await cipInstance.getPrimaryData(testAddressCid, testAddress);
-
-    //     expect(result).toBe(mockData);
-    // }, 1000);
-
-    // // ... Similarly, write tests for other methods ...
-
-    // // Example for testing error scenario
-    // it('should throw an error when fetching primary data fails', async () => {
-    //     const mockCid = 'mockCid';
-    //     const mockName = 'mockName';
-
-    //     (ethers.Contract.prototype.getPrimaryData as jest.Mock).mockRejectedValueOnce(new Error('Some Ethereum error'));
-
-    //     const cipInstance = new Cip(mockProvider);
-
-    //     await expect(cipInstance.getPrimaryData(mockCid, mockName)).rejects.toThrow(`Failed to get primary data for CID ${mockCid} and name ${mockName}`);
-    // });
 });

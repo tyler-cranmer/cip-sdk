@@ -30,16 +30,16 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "cip-sdk2",
+  "name": "cip-sdk",
   "author": "tyler-cranmer",
-  "module": "dist/cip-sdk2.esm.js",
+  "module": "dist/cip-sdk.esm.js",
   "size-limit": [
     {
-      "path": "dist/cip-sdk2.cjs.production.min.js",
+      "path": "dist/cip-sdk.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/cip-sdk2.esm.js",
+      "path": "dist/cip-sdk.esm.js",
       "limit": "10 KB"
     }
   ],
