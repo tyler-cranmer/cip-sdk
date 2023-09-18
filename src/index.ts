@@ -20,8 +20,6 @@ import { fetchImage, fontTransformer, transformURI } from '../src/lib';
 
 export class CIP {
   provider: ethers.Provider;
-  web3Provider?: ethers.BrowserProvider;
-  signer?: ethers.JsonRpcSigner;
   identityContract: ethers.Contract;
   registryContract: ethers.Contract;
   namespaceContract: ethers.Contract;
@@ -30,10 +28,8 @@ export class CIP {
 
   constructor(
     provider: ethers.Provider,
-    web3Provider?: ethers.BrowserProvider
   ) {
     this.provider = provider;
-    this.web3Provider = web3Provider;
     this.identityContract = new ethers.Contract(
       CID_NFT_CONTRACT,
       cidNftAbi,
