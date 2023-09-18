@@ -6,7 +6,7 @@ import {
   bioAbi,
   nameSpaceAbi,
   erc721ABI,
-  subprotocolRegistryAbi,
+
 } from '../src/abi/abi';
 import {
   CID_NFT_CONTRACT,
@@ -14,7 +14,6 @@ import {
   BIO_CONTRACT,
   NAMESPACE_CONTRACT,
   PFP_WRAPPER_CONTRACT,
-  SUBPROTOCOL_REGISTRY_CONTRACT,
 } from '../src/constants';
 import { NameSpace, ProfilePictureData, ProfilePictureInfo } from '../src/types';
 import { fetchImage, fontTransformer, transformURI } from '../src/lib';
@@ -28,7 +27,6 @@ export class CIP {
   namespaceContract: ethers.Contract;
   bioContract: ethers.Contract;
   pfpContract: ethers.Contract;
-  subprotocolCrontract: ethers.Contract;
 
   constructor(
     provider: ethers.Provider,
@@ -57,66 +55,9 @@ export class CIP {
       pfpWrapperAbi,
       this.provider
     );
-    if (web3Provider) {
-      // @ts-ignore
-      this.signer = web3Provider.getSigner();
-      this.subprotocolCrontract = new ethers.Contract(
-        SUBPROTOCOL_REGISTRY_CONTRACT,
-        subprotocolRegistryAbi,
-        this.signer
-      );
-    } else {
-      this.subprotocolCrontract = new ethers.Contract(
-        SUBPROTOCOL_REGISTRY_CONTRACT,
-        subprotocolRegistryAbi,
-        this.provider
-      );
-    }
 
     this.getBio = this.getBio.bind(this);
     this.getNamespace = this.getNamespace.bind(this);
-  }
-
-  /**
-   * @notice Register a new subprotocol. There is a 100 $NOTE fee when registering
-   *  @dev The options ordered, primary, active are not mutually exclusive. In practice, only one will be set for most subprotocols,
-   *  but if a subprotocol for instance supports int keys (mapped to one value) and a list of active NFTs, ordered and active is true.
-   * @param ordered Ordering allows integers to be used as map keys, to one and only one value
-   * @param primary Primary maps to zero or one value
-   * @param active Subprotocols that have a list of a active NFTs
-   * @param address Name of the subprotocol, has to be unique
-   * @param name Address of the subprotocol NFT.
-   * @param fee Fee (in $NOTE) for minting a new token of the subprotocol. Set to 0 if there is no fee. 10% is subtracted from this fee as a CID fee
-   * @returns
-   */
-  public async registerSubprotocol(
-    ordered: boolean,
-    primary: boolean,
-    active: boolean,
-    address: string,
-    name: string,
-    fee: BigInt
-  ) {
-    if (this.web3Provider) {
-      try {
-        const tx = await this.subprotocolCrontract.register(
-          ordered,
-          primary,
-          active,
-          address,
-          name,
-          fee
-        );
-        const reciept = await tx.wait();
-        console.log('Transaction sent:', tx);
-        return reciept;
-      } catch (error) {
-        console.log('error calling register:', error);
-        throw new Error(`Failed to create sub protocol. Error: ${error}`);
-      }
-    } else {
-      throw new Error(`Connect a Web3 provider like meta mask.`);
-    }
   }
 
   /**
@@ -135,7 +76,7 @@ export class CIP {
   }
 
   /**
-   * getPrimaryData is a method that is used to get the users sub protocol NFT IDs of any subprotocol registered with the user's CID.
+   * getPrimaryData is a method that is used to get the users NFT IDs of any subprotocol registered with the user's CID.
    * This method is used to return any of the users registered sub protocol NFT IDs.
    * The return value can be used to get a user's sub protocol data. i.e. namespace or bio information.
    *
@@ -254,7 +195,7 @@ export class CIP {
   }
 
   /**
-   * getPfpImage is a method that returns the profile prcture info/
+   * getPfpImage is a method that returns the profile picture data.
    * @param nftContractAddress NFT contract address of the pfp
    * @param nftID NFT ID
    * @returns ProfilePictureInfo = {

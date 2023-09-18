@@ -1,6 +1,6 @@
 import { CIP } from '../src/index';
 import { ethers } from 'ethers';
-import { ANSYBL_URL, TEST_RPC_URL} from '../src/constants';
+import { ANSYBL_URL} from '../src/constants';
 
 
 describe('Cip', () => {
@@ -120,7 +120,7 @@ describe('CIP other functions', () => {
         expect(ns).toEqual(name_to_be_returned)
     }, 50000)
 
-    it.only('should get pfp info', async () => {
+    it('should get pfp info', async () => {
         const pfp_to_be_returned = {
             src: 'ipfs://QmfVfRh6Um2eg1gVuAzSgEDYmgcYGVKR1EVM45ZWkUN6KX/17.png',
             alt: 'CantoLanterns #17',
@@ -130,18 +130,4 @@ describe('CIP other functions', () => {
     }, 50000)
 
 })
-
-
-describe("Register Sub Protocol", () => {
-    let mockProvider: ethers.Provider;
-    let cipInstance: CIP;
-    let testAddress: `0x${string}`;
-
-    beforeEach(async () => {
-        mockProvider = new ethers.JsonRpcProvider(ANSYBL_URL)
-        cipInstance = new CIP(mockProvider)
-        testAddress = '0x035bc96201666333294c5a04395bb3618a2b6a11'
-    });
-})
-
 });
