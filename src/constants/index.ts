@@ -13,7 +13,7 @@ export const ANSYBL_URL = 'https://archive-967fa5df-1-canto.ansybl.io/evm_rpc/';
 export const TEST_SUBPROTOCOL_REGISTRY_CONTRACT = '0xf5f2b89beed50a0801df49b24f7c2bf6fa52dc3b'
 export const TEST_CID_NFT_CONTRACT = '0x8ed389f3f0934396eefca08c685e2ec68c49d993'
 export const TEST_ADDRESS_REGISTRY_CONTRACT = '0x0b8ea1f4935a6d541eb50fc6f0ef12239fac6945'
-
+export const TEST_RPC_URL = 'https://canto-testnet.plexnode.wtf'
 
 export const emojis = [
   "✨",

@@ -1,6 +1,6 @@
 import { CIP } from '../src/index';
 import { ethers } from 'ethers';
-import { ANSYBL_URL} from '../src/constants';
+import { ANSYBL_URL, TEST_RPC_URL} from '../src/constants';
 
 
 describe('Cip', () => {
@@ -132,16 +132,16 @@ describe('CIP other functions', () => {
 })
 
 
-// describe("Register Sub Protocol", () => {
-//     let mockProvider: ethers.Provider;
-//     let cipInstance: CIP;
-//     let testAddress: `0x${string}`;
+describe("Register Sub Protocol", () => {
+    let mockProvider: ethers.Provider;
+    let cipInstance: CIP;
+    let testAddress: `0x${string}`;
 
-//     beforeEach(async () => {
-//         mockProvider = new ethers.JsonRpcProvider(ANSYBL_URL)
-//         cipInstance = new CIP(mockProvider)
-//         testAddress = '0x035bc96201666333294c5a04395bb3618a2b6a11'
-//     });
-// })
+    beforeEach(async () => {
+        mockProvider = new ethers.JsonRpcProvider(ANSYBL_URL)
+        cipInstance = new CIP(mockProvider)
+        testAddress = '0x035bc96201666333294c5a04395bb3618a2b6a11'
+    });
+})
 
 });

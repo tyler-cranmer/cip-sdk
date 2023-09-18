@@ -112,6 +112,7 @@ export class CIP {
         return reciept;
       } catch (error) {
         console.log('error calling register:', error);
+        throw new Error(`Failed to create sub protocol. Error: ${error}`);
       }
     } else {
       throw new Error(`Connect a Web3 provider like meta mask.`);
@@ -349,20 +350,23 @@ export class CIP {
   }
 
   /**
-   * getNamespaceByAddress d
-   * @param address
-   * @returns
+   * getNamespaceByAddress is a method that gets the user's namspace information. 
+   * @param address user address
+   * @returns a namspace object that contains displayName and baseName in string format.
    */
   public async getNamespaceByAddress(address: string): Promise<any> {
     return await this.getByAddress(address, 'namespace', this.getNamespace);
   }
 
   /**
-   * getPfpByAddress
-   * @param address
-   * @returns
+   * getPfpByAddress is a method that gets the user's pfp data by using their address.
+   * @param address user's address
+   * @returns ProfilePictureInfo object -> {
+   * src (string) : image url,
+   * alt (string) : image name
+   * }
    */
-  public async getPfpByAddress(address: string): Promise<any> {
+  public async getPfpByAddress(address: string): Promise<ProfilePictureInfo> {
     try {
       const cid = await this.getCID(address);
       const pfpCID = await this.getPfpCID(cid);

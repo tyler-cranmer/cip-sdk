@@ -2512,6 +2512,13 @@ ci-info@^3.2.0:
   resolved "https://registry.npmjs.org/ci-info/-/ci-info-3.8.0.tgz"
   integrity sha512-eXTggHWSooYhq49F2opQhuHWgzucfF2YgODK4e1566GQs5BIfP30B0oenwBJHfWxAs2fyPB1s7Mg949zLf61Yw==
 
+"cip-sdk@file:":
+  version "0.1.0"
+  resolved "file:"
+  dependencies:
+    cip-sdk "file:"
+    ethers "^6.7.1"
+
 cjs-module-lexer@^1.0.0:
   version "1.2.3"
   resolved "https://registry.npmjs.org/cjs-module-lexer/-/cjs-module-lexer-1.2.3.tgz"
