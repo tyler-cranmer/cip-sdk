@@ -2,6 +2,10 @@
 
 The Canto Identity Protocol SDK provides easy use functions to retrieving user CIP data.
 
+## Canto Identity Protocol
+
+Canto Identity Protocol (CIP) is an on-chain identity protocol that aggregates identity from Subprotocols. Anyone can permissionlessly create a Subprotocol to represent any kind of identity trait – textual, visual, or otherwise. End users freely choose which traits to include in their on-chain identity.
+
 ## Install
 
 ```bash
