@@ -69,7 +69,19 @@ export class CIP {
 
 
 
-
+public async registerSubprotocol(ordered: boolean, primary: boolean, active: boolean, nftAddress: string, name: string, fee: number): Promise<ethers.ContractTransaction> {
+  if(this.signer == undefined || this.subProtocolContract == undefined){
+    console.log(`Signer's private key is neccisary to write to the sub protocol contract.`);
+    throw new Error(`Please provide signer's private key into constructor`);
+  }
+  try {
+    const tx = await this.subProtocolContract.connect(this.signer).register(ordered, primary,active,nftAddress,name,fee);
+    return tx;
+  } catch(error){
+    console.log(`Failed to register subprotocol`, error);
+    throw new Error(`Failed to register subprotocol.\nError: ${error}`)
+  }
+}
 
 
   
