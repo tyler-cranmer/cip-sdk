@@ -6,7 +6,7 @@ import {
   bioAbi,
   nameSpaceAbi,
   erc721ABI,
-
+  subprotocolRegistryAbi
 } from '../src/abi/abi';
 import {
   CID_NFT_CONTRACT,
@@ -14,20 +14,24 @@ import {
   BIO_CONTRACT,
   NAMESPACE_CONTRACT,
   PFP_WRAPPER_CONTRACT,
+  SUBPROTOCOL_REGISTRY_CONTRACT
 } from '../src/constants';
 import { NameSpace, ProfilePictureData, ProfilePictureInfo } from '../src/types';
 import { fetchImage, fontTransformer, transformURI } from '../src/lib';
 
 export class CIP {
   provider: ethers.Provider;
+  signer: ethers.Signer | undefined;
   identityContract: ethers.Contract;
   registryContract: ethers.Contract;
   namespaceContract: ethers.Contract;
   bioContract: ethers.Contract;
   pfpContract: ethers.Contract;
+  subProtocolContract: ethers.Contract | undefined;
 
   constructor(
     provider: ethers.Provider,
+    privateKey?: string,
   ) {
     this.provider = provider;
     this.identityContract = new ethers.Contract(
@@ -52,10 +56,35 @@ export class CIP {
       this.provider
     );
 
+    if(privateKey){
+      const wallet = new ethers.Wallet(privateKey);
+      this.signer = wallet.connect(this.provider)
+      this.subProtocolContract = new ethers.Contract(SUBPROTOCOL_REGISTRY_CONTRACT, subprotocolRegistryAbi, this.signer)
+    }
+
     this.getBio = this.getBio.bind(this);
     this.getNamespace = this.getNamespace.bind(this);
   }
 
+
+
+
+public async registerSubprotocol(ordered: boolean, primary: boolean, active: boolean, nftAddress: string, name: string, fee: number): Promise<ethers.ContractTransaction> {
+  if(this.signer == undefined || this.subProtocolContract == undefined){
+    console.log(`Signer's private key is neccisary to write to the sub protocol contract.`);
+    throw new Error(`Please provide signer's private key into constructor`);
+  }
+  try {
+    const tx = await this.subProtocolContract.register(ordered, primary,active,nftAddress,name,fee);
+    return await tx.wait();
+  } catch(error){
+    console.log(`Failed to register subprotocol`, error);
+    throw new Error(`Failed to register subprotocol.\nError: ${error}`)
+  }
+}
+
+
+  
   /**
    * getCID is a method that calls the Canto Identity registration contract and returns the CID NFT ID that is registered to the provided address.
    * The CID NFT ID can be used to get a users sub protocol NFT IDs.
