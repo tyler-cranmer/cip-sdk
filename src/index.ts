@@ -59,7 +59,7 @@ export class CIP {
     if(privateKey){
       const wallet = new ethers.Wallet(privateKey);
       this.signer = wallet.connect(this.provider)
-      this.subProtocolContract = new ethers.Contract(SUBPROTOCOL_REGISTRY_CONTRACT, subprotocolRegistryAbi, this.provider)
+      this.subProtocolContract = new ethers.Contract(SUBPROTOCOL_REGISTRY_CONTRACT, subprotocolRegistryAbi, this.signer)
     }
 
     this.getBio = this.getBio.bind(this);
@@ -75,8 +75,8 @@ public async registerSubprotocol(ordered: boolean, primary: boolean, active: boo
     throw new Error(`Please provide signer's private key into constructor`);
   }
   try {
-    const tx = await this.subProtocolContract.connect(this.signer).register(ordered, primary,active,nftAddress,name,fee);
-    return tx;
+    const tx = await this.subProtocolContract.register(ordered, primary,active,nftAddress,name,fee);
+    return await tx.wait();
   } catch(error){
     console.log(`Failed to register subprotocol`, error);
     throw new Error(`Failed to register subprotocol.\nError: ${error}`)
