@@ -44,4 +44,5 @@ const pfp = await cipInstance.getPfpByAddress('<USER_CANTO_ADDRESS>');
 - getBioByAddress(address): bio - Method is an aggregation of getCID, getBioCID and getBio. This method only needs user's address to return the bio.
 - getNamespaceByAddress(address): Namespace - Method used to get user's namespace data. This method is also an aggregation of getCID, getNamespaceCID, and getNamespace. 
 - getPfpByAddress(address): ProfilePictureInfo - Method used to get the user's profile picture data. This method is also an aggregation of getCID, getPfpData, getPfpImage. return value will be src = image src, alt: nft name.
+- registerSubprotocol(ordered, primary, active, nftAddress, name, fee): ethers.ContractTransaction - Method used to register new sub protocol to cip. 
 

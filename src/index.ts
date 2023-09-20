@@ -68,8 +68,19 @@ export class CIP {
 
 
 
-
-public async registerSubprotocol(ordered: boolean, primary: boolean, active: boolean, nftAddress: string, name: string, fee: number): Promise<ethers.ContractTransaction> {
+  /**
+   * @notice Register a new subprotocol. There is a 100 $NOTE fee when registering
+   *  @dev The options ordered, primary, active are not mutually exclusive. In practice, only one will be set for most subprotocols,
+   *  but if a subprotocol for instance supports int keys (mapped to one value) and a list of active NFTs, ordered and active is true.
+   * @param ordered Ordering allows integers to be used as map keys, to one and only one value
+   * @param primary Primary maps to zero or one value
+   * @param active Subprotocols that have a list of a active NFTs
+   * @param address Name of the subprotocol, has to be unique
+   * @param name Address of the subprotocol NFT.
+   * @param fee Fee (in $NOTE) for minting a new token of the subprotocol. Set to 0 if there is no fee. 10% is subtracted from this fee as a CID fee
+   * @returns transaction receipt.
+   */
+public async registerSubprotocol(ordered: boolean, primary: boolean, active: boolean, nftAddress: string, name: string, fee: BigInt): Promise<ethers.ContractTransaction> {
   if(this.signer == undefined || this.subProtocolContract == undefined){
     console.log(`Signer's private key is neccisary to write to the sub protocol contract.`);
     throw new Error(`Please provide signer's private key into constructor`);
