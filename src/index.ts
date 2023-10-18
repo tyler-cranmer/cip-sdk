@@ -20,7 +20,7 @@ import { NameSpace, ProfilePictureData, ProfilePictureInfo } from '../src/types'
 import { fetchImage, fontTransformer, transformURI } from '../src/lib';
 
 export class CIP {
-  provider: ethers.Provider;
+  provider: ethers.Provider | any;
   signer: ethers.Signer | undefined;
   identityContract: ethers.Contract;
   registryContract: ethers.Contract;
